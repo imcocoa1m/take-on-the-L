@@ -1,0 +1,33 @@
+local Event = game:GetService("ReplicatedStorage").Remotes.ActionEvent
+local keysFolder = workspace.Keys
+
+local keyList = keysFolder:GetChildren()
+local totalKeys = #keyList
+
+if totalKeys > 670000 then
+    totalKeys = 670000
+end
+
+task.spawn(function()
+    local totalTime = 60
+    local startTime = tick()
+    local currentIndex = 1
+
+    while currentIndex <= totalKeys do
+        local elapsed = tick() - startTime
+        local targetIndex = math.floor((elapsed / totalTime) * totalKeys)
+
+        if targetIndex > totalKeys then
+            targetIndex = totalKeys
+        end
+
+        for i = currentIndex, targetIndex do
+            if keyList[i] then
+                Event:FireServer("KeyTouched", keyList[i])
+            end
+        end
+
+        currentIndex = targetIndex + 1
+        task.wait()
+    end
+end)
